@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <title>Web Chat in Development</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--
+      For simplicity and code clarity, we are using Babel and React from unpkg.com.
+    -->
+  <script crossorigin="anonymous" src="https://unpkg.com/@babel/standalone@7.8.7/babel.min.js"></script>
+  <script crossorigin="anonymous" src="https://unpkg.com/react@16.8.6/umd/react.development.js"></script>
+  <script crossorigin="anonymous" src="https://unpkg.com/react-dom@16.8.6/umd/react-dom.development.js"></script>
+  <script crossorigin="anonymous" src="https://unpkg.com/react-redux@7.1.0/dist/react-redux.min.js"></script>
+  <!--
+          This CDN points to the latest official release of Web Chat. If you need to test against Web Chat's latest bits, please refer to pointing to Web Chat's MyGet feed:
+          https://github.com/microsoft/BotFramework-WebChat#how-to-test-with-web-chats-latest-bits
+        -->
+  <script crossorigin="anonymous" src="https://cdn.botframework.com/botframework-webchat/latest/webchat.js"></script>
+  <style>
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      margin: 0
+    }
+
+    #webchat {
+      height: 100%;
+      width: 100%;
+    }
+
+    .highlightedActivity--bot {
+      border-left-color: Red;
+      border-left-style: solid;
+      border-left-width: 5px;
+      margin-left: 8px;
+    }
+
+    .highlightedActivity--user {
+      border-right-color: Green;
+      border-right-style: solid;
+      border-right-width: 5px;
+      margin-right: 8px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="webchat" role="main"></div>
+  <script type="text/babel">
+    ( async function () {
+      const { ReactWebChat } = window.WebChat;
+
+      const styleOptions = {
+        botAvatarInitials: ' ',
+        botAvatarBackgroundColor: 'transparent',
+        // botAvatarImage: './bot40.jpg',
+        userAvatarInitials: ' ',
+        userAvatarBackgroundColor: 'transparent',
+        // userAvatarImage: './me40.jpg',
+      }
+
+      // const activityMiddleware = () => next => card => {
+      //   return children => (
+      //     <div
+      //       className={card.activity.from.role === 'user' ? 'highlightedActivity--user' : 'highlightedActivity--bot'}
+      //     >
+      //       {next( card )( children )}
+      //     </div>
+      //   );
+      // };
+
+      // const activityStatusMiddleware = () => next => args => {
+      //   const {
+      //     activity: {
+      //       from: { role }
+      //     },
+      //     sendState,
+      //     sameTimestampGroup
+      //   } = args;
+
+      //   console.log('Args ', args)
+
+      //   if ( sendState === 'sending' ) {
+      //     return <span className="activityStatus activityStatus__sendStatus">Sending&hellip;</span>;
+      //   } else if ( sendState === 'send failed' ) {
+      //     // Custom retry logic can be added when rendering the "Send failed." status.
+      //     return <span className="activityStatus">Send failed.</span>;
+      //   } else if ( !sameTimestampGroup ) {
+      //     return (
+      //       <span className="activityStatus activityStatus__timestamp">
+      //         <span className="activityStatus__timestampPretext">{role === 'user' ? 'User at ' : 'Bot at '}</span>
+      //         <span className="activityStatus__timestampContent">{next( args )}</span>
+      //       </span>
+      //     );
+      //   }
+
+      //   return next( args );
+      // };
+
+      // const attachmentMiddleware = options => next => card => {
+      //   console.log('Attachment ', card)
+      //   const { attachment: { content: { actions } } } = card;
+
+      //   let actionType = [];
+      //   let action;
+      //   for(action of actions) {
+      //     if (action) {
+      //       actionType.push(action.type.toLowerCase())
+      //     }
+      //   }
+      //   console.log( actionType)
+      //   if ( actionType && action.value ) {
+      //     const newEvent = new Event( 'eventTarget' )
+      //     newEvent.data = newEvent;
+      //     window.dispatchEvent( newEvent.data )
+      //   }
+
+      //   return next (card);
+      // }
+
+      // const cardActionMiddleware = () => next => ( { cardAction } ) => {
+      //   console.log( cardAction )
+      //   return next( { cardAction } );
+      // }
+
+      const store = window.WebChat.createStore( {}, ( { dispatch } ) => next => async action => {
+        if ( action.type === 'DIRECT_LINE/INCOMING_ACTIVITY' ) {
+          console.log( action )
+          const { activity } = action.payload;
+        }
+        if ( action.type === 'DIRECT_LINE/CONNECT_FULFILLED' ) {
+          store.dispatch( {
+            type: 'WEB_CHAT/SEND_EVENT',
+            payload: {
+              name: 'webchat/join',
+              value: {
+                language: window.navigator.language
+              }
+            }
+          } )
+        }
+        return next( action );
+      } );
+
+      const res = await fetch( 'http://localhost:3500/directline/conversations', { method: 'POST' } );
+      const { token } = await res.json();
+
+      window.ReactDOM.render(
+        <ReactWebChat
+          directLine={window.WebChat.createDirectLine( { token } )}
+          store={store}
+          styleOptions={styleOptions}
+          // activityMiddleware={activityMiddleware}
+          // activityStatusMiddleware={activityStatusMiddleware}
+          // attachmentMiddleware={attachmentMiddleware}
+          // cardActionMiddleware={cardActionMiddleware}
+        />,
+        document.getElementById( 'webchat' )
+      );
+      document.querySelector( '#webchat > *' ).focus();
+    } )().catch( err => console.error( err ) );
+
+  </script>
+</body>
+
+</html>
