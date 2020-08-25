@@ -62,74 +62,176 @@
         // userAvatarImage: './me40.jpg',
       }
 
-      // const activityMiddleware = () => next => card => {
-      //   return children => (
-      //     <div
-      //       className={card.activity.from.role === 'user' ? 'highlightedActivity--user' : 'highlightedActivity--bot'}
-      //     >
-      //       {next( card )( children )}
-      //     </div>
-      //   );
-      // };
+      // Demonstrates highlighting activities in the transcript window
+      const activityMiddleware = () => next => ( ...setupArgs ) => ( ...renderArgs ) => {
+        const render = next( ...setupArgs );
+        if ( render ) {
+          const { activity: { id, from: { role } } } = render( ...renderArgs ).props;
 
-      // const activityStatusMiddleware = () => next => args => {
-      //   const {
-      //     activity: {
-      //       from: { role }
-      //     },
-      //     sendState,
-      //     sameTimestampGroup
-      //   } = args;
+          return render && (
+            <div>
+              <div key={ () => id } className={ role === 'user' ? HIGHLIGHT_FROM_USER_CSS : HIGHLIGHT_FROM_BOT_CSS }>
+                { next( ...setupArgs )( ...renderArgs ) }
+              </div>
+            </div> )
+        }
+      }
 
-      //   console.log('Args ', args)
+      // Demonstrates how to change the activity status
+      const activityStatusMiddleware = () => next => args => {
+        const {
+          activity: {
+            from: { role }
+          },
+          sendState,
+          sameTimestampGroup
+        } = args;
 
-      //   if ( sendState === 'sending' ) {
-      //     return <span className="activityStatus activityStatus__sendStatus">Sending&hellip;</span>;
-      //   } else if ( sendState === 'send failed' ) {
-      //     // Custom retry logic can be added when rendering the "Send failed." status.
-      //     return <span className="activityStatus">Send failed.</span>;
-      //   } else if ( !sameTimestampGroup ) {
-      //     return (
-      //       <span className="activityStatus activityStatus__timestamp">
-      //         <span className="activityStatus__timestampPretext">{role === 'user' ? 'User at ' : 'Bot at '}</span>
-      //         <span className="activityStatus__timestampContent">{next( args )}</span>
-      //       </span>
-      //     );
-      //   }
+        if ( sendState === 'sending' ) {
+          return <span className="activityStatus activityStatus__sendStatus">Sending&hellip;</span>;
+        } else if ( sendState === 'send failed' ) {
+          // Custom retry logic can be added when rendering the "Send failed." status.
+          return <span className="activityStatus">Send failed.</span>;
+        } else if ( !sameTimestampGroup ) {
+          return (
+            <span className="activityStatus activityStatus__timestamp">
+              <span className="activityStatus__timestampPretext">{role === 'user' ? 'User at ' : 'Bot at '}</span>
+              <span className="activityStatus__timestampContent">{next( args )}</span>
+            </span>
+          );
+        }
 
-      //   return next( args );
-      // };
+        return next( args );
+      };
 
-      // const attachmentMiddleware = options => next => card => {
-      //   console.log('Attachment ', card)
-      //   const { attachment: { content: { actions } } } = card;
+      // Demonstrates disabling card buttons after click (currently experimental)
+      const attachmentMiddleware = () => next => ( ...args ) => {
+        const { activity, attachment } = args[ 0 ];
+        const { activities } = store.getState();
+        const messageActivities = activities.filter( activity => activity.type === 'message' );
+        const recentBotMessage = messageActivities.pop() === activity;
 
-      //   let actionType = [];
-      //   let action;
-      //   for(action of actions) {
-      //     if (action) {
-      //       actionType.push(action.type.toLowerCase())
-      //     }
-      //   }
-      //   console.log( actionType)
-      //   if ( actionType && action.value ) {
-      //     const newEvent = new Event( 'eventTarget' )
-      //     newEvent.data = newEvent;
-      //     window.dispatchEvent( newEvent.data )
-      //   }
+        switch ( attachment.contentType ) {
+          case 'application/vnd.microsoft.card.adaptive':
+            return (
+              <AdaptiveCardContent
+                actionPerformedClassName="card__action--performed"
+                content={attachment.content}
+                disabled={!recentBotMessage}
+              />
+            );
 
-      //   return next (card);
-      // }
+          case 'application/vnd.microsoft.card.animation':
+            return (
+              <AnimationCardContent
+                actionPerformedClassName="card__action--performed"
+                content={attachment.content}
+                disabled={!recentBotMessage}
+              />
+            );
 
-      // const cardActionMiddleware = () => next => ( { cardAction } ) => {
-      //   console.log( cardAction )
-      //   return next( { cardAction } );
-      // }
+          case 'application/vnd.microsoft.card.audio':
+            return (
+              <AudioCardContent
+                actionPerformedClassName="card__action--performed"
+                content={attachment.content}
+                disabled={!recentBotMessage}
+              />
+            );
+
+          case 'application/vnd.microsoft.card.hero':
+            return (
+              <HeroCardContent
+                actionPerformedClassName="card__action--performed"
+                content={attachment.content}
+                disabled={!recentBotMessage}
+              />
+            );
+
+          case 'application/vnd.microsoft.card.oauth':
+            return (
+              <OAuthCardContent
+                actionPerformedClassName="card__action--performed"
+                content={attachment.content}
+                disabled={!recentBotMessage}
+              />
+            );
+
+          case 'application/vnd.microsoft.card.receipt':
+            return (
+              <ReceiptCardContent
+                actionPerformedClassName="card__action--performed"
+                content={attachment.content}
+                disabled={!recentBotMessage}
+              />
+            );
+
+          case 'application/vnd.microsoft.card.signin':
+            return (
+              <SignInCardContent
+                actionPerformedClassName="card__action--performed"
+                content={attachment.content}
+                disabled={!recentBotMessage}
+              />
+            );
+
+          case 'application/vnd.microsoft.card.thumbnail':
+            return (
+              <ThumbnailCardContent
+                actionPerformedClassName="card__action--performed"
+                content={attachment.content}
+                disabled={!recentBotMessage}
+              />
+            );
+
+          case 'application/vnd.microsoft.card.video':
+            return (
+              <VideoCardContent
+                actionPerformedClassName="card__action--performed"
+                content={attachment.content}
+                disabled={!recentBotMessage}
+              />
+            );
+          default:
+            return next( ...args );
+        }
+      }
+
+      // Demonstrates how to update a card action
+      const cardActionMiddleware = () => next => async ( { cardAction } ) => {
+        const { type, value } = cardAction;
+
+        switch ( type ) {
+          case 'openUrl':
+            // For OAuth or sign-in popups, we will open the auth dialog directly.
+            const popup = window.open();
+            const url = "https://bing.com"
+
+            popup.location.href = url;
+            break;
+
+          case 'openUrl':
+            if ( confirm( `Do you want to open this URL?\n\n${ value }` ) ) {
+              window.open( value, '_blank' );
+            }
+            break;
+
+          default:
+            return next( { cardAction } );
+        }
+      }
 
       const store = window.WebChat.createStore( {}, ( { dispatch } ) => next => async action => {
         if ( action.type === 'DIRECT_LINE/INCOMING_ACTIVITY' ) {
-          console.log( action )
-          const { activity } = action.payload;
+          const { activity, activity: { from: { role } } } = action.payload;
+          switch ( role ) {
+            case "bot":
+              console.log( 'INCOMING_ACTIVITY ', activity );
+              break;
+            case "user":
+              console.log( 'OUTGOING_ACTIVITY ', activity );
+              break;
+          }
         }
         if ( action.type === 'DIRECT_LINE/CONNECT_FULFILLED' ) {
           store.dispatch( {
@@ -153,10 +255,10 @@
           directLine={window.WebChat.createDirectLine( { token } )}
           store={store}
           styleOptions={styleOptions}
-          // activityMiddleware={activityMiddleware}
-          // activityStatusMiddleware={activityStatusMiddleware}
-          // attachmentMiddleware={attachmentMiddleware}
-          // cardActionMiddleware={cardActionMiddleware}
+          activityMiddleware={activityMiddleware}
+          activityStatusMiddleware={activityStatusMiddleware}
+          attachmentMiddleware={attachmentMiddleware}
+          cardActionMiddleware={cardActionMiddleware}
         />,
         document.getElementById( 'webchat' )
       );
