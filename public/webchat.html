@@ -57,6 +57,22 @@
     <script type="text/babel">
     ( async function () {
       const { ReactWebChat } = window.WebChat;
+      const { WebChat: {
+        Components: {
+          AdaptiveCardContent,
+          AnimationCardContent,
+          AudioCardContent,
+          HeroCardContent,
+          OAuthCardContent,
+          ReceiptCardContent,
+          SignInCardContent,
+          ThumbnailCardContent,
+          VideoCardContent
+        },
+        createDirectLine,
+        createStore,
+        ReactWebChat
+      } } = window;
 
       const styleOptions = {
         botAvatarInitials: 'BB',
@@ -73,7 +89,7 @@
 
           return render && (
             <div>
-              <div key={ () => id } className={ role === 'user' ? HIGHLIGHT_FROM_USER_CSS : HIGHLIGHT_FROM_BOT_CSS }>
+              <div key={ () => id } className={ role === 'user' ? 'highlightedActivity--user' : 'highlightedActivity--bot' }>
                 { next( ...setupArgs )( ...renderArgs ) }
               </div>
             </div> )
