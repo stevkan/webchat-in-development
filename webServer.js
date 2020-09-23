@@ -16,8 +16,7 @@ const logger = (req, res, next) => {
 // Create HTTP web server.
 app
     .use(logger)
-    .get('/', (_, res) => void res.send(`<h1>Web Chat</h1>`))
-    .get('/webchat', (_, res, next) => {
+    .get('/', (_, res, next) => {
         try {
             fs.readFile('./public/webchat.html', function read(err, data) {
                 if (err) {
