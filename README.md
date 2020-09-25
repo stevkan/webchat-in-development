@@ -8,6 +8,8 @@ Web Chat in Development is designed to be a simple set-up-and-go implementation 
 - A locally deployed [bot](https://docs.botframework.com) running on (default) port `3978`
 - An Azure [bot registration](https://docs.microsoft.com/en-us/azure/bot-service/bot-service-quickstart-registration?view=azure-bot-service-3.0)
 - Either [ngrok](https://blog.botframework.com/2017/10/19/debug-channel-locally-using-ngrok/) or [Azure Service Bus](https://blog.botframework.com/2019/04/16/debugging-your-locally-hosted-v4-bot-using-azure-relays/) installed on your system
+- [Python](https://www.python.org/downloads/) v3.8+ installed on your system
+  - The [Twisted](https://pypi.org/project/Twisted/) package  installed on your system - installed via the `pip` command (`pip install Twisted`)
 
 #
 
@@ -23,7 +25,7 @@ Web Chat in Development is designed to be a simple set-up-and-go implementation 
 
 ### Running Web Chat in Development
 - Start your bot locally on your machine
-- Start up ngrok or Service Bus using port `3978`
-  - Update the bot registration's messaging endpoint with the ngrok or Service Bus generated endpoint (e.g. `https://j8dhs7elw.ngrok.io/api/messages`)
+- Start up ngrok, Azure Service Bus Relay, or equivalent, using port `3978` to create a tunnel
+  - Update the bot registration's messaging endpoint with the generated endpoint (ngrok example: `https://j8dhs7elw.ngrok.io/api/messages`)
 - Type `npm run watch` to run both servers concurrently
 - Navigate to [http://localhost:8000](http://localhost:8000) to test your bot and/or Web Chat
