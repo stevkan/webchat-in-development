@@ -13,8 +13,11 @@ Web Chat in Development is designed to be a simple set-up-and-go implementation 
 
 ### Setting up
 - Clone this repo and run `npm i` in the root directory
-- Update the `.env` file with your bot's Microsoft App Id, Microsoft App Password, and Direct Line secret
-  - The Direct Line secret can be obtained by adding the Direct Line channel in your bot's Channels blade in Azure
+- Update the `.env` file with:
+  - Your Direct Line secret, which can be obtained by adding the Direct Line channel in your bot's Channels blade in Azure. Copy the key supplied there.
+  - The port to use for the token server.
+  - The path to be used as the web server's root directory.
+  - The port to use for the web server.
 
 #
 

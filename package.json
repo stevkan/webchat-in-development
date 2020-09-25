@@ -1,25 +1,26 @@
 {
   "name": "webchat-in-development",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Web Chat in Development is designed to be a simple set-up-and-go implementation of BotFramework-WebChat",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \"node ./tokenServer.js\" \"node ./webServer.js\"",
-    "watch": "concurrently \"nodemon ./tokenServer.js\" \"nodemon ./webServer.js\"",
+    "start": "node index.js",
+    "watch": "nodemon index.js",
     "lint": "eslint ."
   },
   "author": "Steven Kanberg",
   "license": "MIT",
   "dependencies": {
-    "@tinyhttp/app": "^0.2.58",
-    "@tinyhttp/cors": "^0.2.14",
+    "@tinyhttp/app": "^0.2.82",
+    "@tinyhttp/cors": "^0.2.20",
     "body-parser": "^1.19.0",
-    "concurrently": "^5.3.0",
+    "child-process": "^1.0.2",
+    "cross-spawn": "^7.0.3",
     "dotenv": "^8.2.0",
     "request": "^2.88.2"
   },
   "devDependencies": {
-    "eslint": "^7.7.0",
+    "eslint": "^7.9.0",
     "nodemon": "^2.0.4"
   }
 }
