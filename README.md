@@ -8,8 +8,14 @@ Web Chat in Development is designed to be a simple set-up-and-go implementation 
 - A locally deployed [bot](https://docs.botframework.com) running on (default) port `3978`
 - An Azure [bot registration](https://docs.microsoft.com/en-us/azure/bot-service/bot-service-quickstart-registration?view=azure-bot-service-3.0)
 - Either [ngrok](https://blog.botframework.com/2017/10/19/debug-channel-locally-using-ngrok/) or [Azure Service Bus](https://blog.botframework.com/2019/04/16/debugging-your-locally-hosted-v4-bot-using-azure-relays/) installed on your system
-- [Python](https://www.python.org/downloads/) v3.8+ installed on your system
+- [Python](https://www.python.org/downloads/) v3.5+ installed on your system
   - The [Twisted](https://pypi.org/project/Twisted/) package  installed on your system - installed via the `pip` command (`pip install Twisted`)
+    - *If any errors are generated while installing Twisted, please refer to the alternative installation steps proposed [here](https://stackoverflow.com/a/62276435/3962636)*
+    - *Per the proposed alternative installation steps, to determine the correct .whl file to download  run the following two commands, as described [here](https://stackoverflow.com/a/63775417/3962636):*
+  
+      `python --version`
+
+      `python bitness: python -c "import struct; print(struct.calcsize('P') * 8)"`
 
 #
 
