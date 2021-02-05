@@ -11,13 +11,14 @@
   "author": "Steven Kanberg",
   "license": "MIT",
   "dependencies": {
-    "@tinyhttp/app": "^0.2.82",
-    "@tinyhttp/cors": "^0.2.20",
     "body-parser": "^1.19.0",
     "child-process": "^1.0.2",
     "cross-spawn": "^7.0.3",
     "dotenv": "^8.2.0",
-    "request": "^2.88.2"
+    "path": "^0.12.7",
+    "request": "^2.88.2",
+    "restify": "^8.5.1",
+    "restify-cors-middleware": "^1.1.1"
   },
   "devDependencies": {
     "eslint": "^7.9.0",
