@@ -1,6 +1,6 @@
 const tokenServer = require("./tokenServer").TokenProcess;
-const checkPython = require("./webServer").CheckPython;
-const checkTwisted = require("./webServer").CheckTwisted;
+const checkNpm = require("./webServer").CheckNpm;
+// const checkTwisted = require("./webServer").CheckTwisted;
 const webServer = require("./webServer").WebServer;
 
 // Starts token and web servers
@@ -9,13 +9,9 @@ const webServer = require("./webServer").WebServer;
   tokenServer();
   
   // Calls to start web server, if checks succeed
-  const isPythonLoaded = await checkPython();
-  isPythonLoaded.on('CHECK_SUCCEEDED', async () => {
-    isPythonLoaded.removeAllListeners();
-    const isTwistedLoaded = await checkTwisted();
-    isTwistedLoaded.on('CHECK_SUCCEEDED', async () => {
-      isTwistedLoaded.removeAllListeners();
-      await webServer();
-    });
+  const isNpmLoaded = await checkNpm();
+  isNpmLoaded.on('CHECK_SUCCEEDED', async () => {
+    await webServer();
+    isNpmLoaded.removeAllListeners();
   });
 })();
